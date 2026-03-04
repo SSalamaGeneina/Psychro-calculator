@@ -23,7 +23,7 @@ export default function InfoTooltip({ text }: InfoTooltipProps) {
     <div className="relative inline-block" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="text-blue-500 hover:text-blue-700 text-xs font-bold w-4 h-4 rounded-full border border-blue-400 inline-flex items-center justify-center focus:outline-none focus:ring-1 focus:ring-blue-400"
+        className="text-brand-teal hover:text-brand-green text-xs font-bold w-4 h-4 rounded-full border border-brand-teal/40 inline-flex items-center justify-center focus:outline-none focus:ring-1 focus:ring-brand-green"
         aria-label="Info"
         tabIndex={0}
       >

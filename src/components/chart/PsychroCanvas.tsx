@@ -10,10 +10,10 @@ const AH_MAX = 30;
 const PADDING = { top: 40, right: 60, bottom: 50, left: 60 };
 
 const ZONE_COLORS: Record<string, string> = {
-  outside: '#800080',
-  aboveScreen: '#008000',
-  inside: '#FF8C00',
-  plant: '#22C55E',
+  outside: '#003d48',
+  aboveScreen: '#00c400',
+  inside: '#0077a8',
+  plant: '#DB7B2B',
 };
 
 export default function PsychroCanvas() {
@@ -53,7 +53,7 @@ export default function PsychroCanvas() {
     ctx.fillRect(0, 0, w, h);
 
     // Grid lines
-    ctx.strokeStyle = '#E5E5E5';
+    ctx.strokeStyle = '#E5E7EB';
     ctx.lineWidth = 0.5;
     for (let T = T_MIN; T <= T_MAX; T += 5) {
       const x = toX(T, w);
@@ -70,11 +70,11 @@ export default function PsychroCanvas() {
       ctx.stroke();
     }
 
-    // Enthalpy lines (blue diagonals)
-    ctx.strokeStyle = '#4488FF';
+    // Enthalpy lines (brand teal, lighter)
+    ctx.strokeStyle = '#003d4840';
     ctx.lineWidth = 0.5;
-    ctx.font = '9px sans-serif';
-    ctx.fillStyle = '#4488FF';
+    ctx.font = '9px "DM Sans", sans-serif';
+    ctx.fillStyle = '#003d48';
     for (let H = 0; H <= 120; H += 10) {
       ctx.beginPath();
       let started = false;
@@ -100,7 +100,7 @@ export default function PsychroCanvas() {
       }
     }
 
-    // RH curves
+    // RH curves (brand green)
     const drawRHCurve = (rh: number, color: string, lineWidth: number, label: boolean) => {
       ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth;
@@ -128,19 +128,20 @@ export default function PsychroCanvas() {
 
       if (label && started) {
         ctx.fillStyle = color;
-        ctx.font = '9px sans-serif';
+        ctx.font = '9px "DM Sans", sans-serif';
         ctx.fillText(`${rh}%`, lastX + 2, lastY + 3);
       }
     };
 
     for (let rh = 10; rh <= 90; rh += 10) {
-      drawRHCurve(rh, '#DD4444', 0.7, true);
+      drawRHCurve(rh, '#00c40088', 0.7, true);
     }
-    drawRHCurve(100, '#FF0000', 2, false);
+    // Saturation curve bold
+    drawRHCurve(100, '#DB7B2B', 2.5, false);
 
     // Saturation label
-    ctx.fillStyle = '#FF0000';
-    ctx.font = 'bold 10px sans-serif';
+    ctx.fillStyle = '#DB7B2B';
+    ctx.font = 'bold 10px "DM Sans", sans-serif';
     const satAH50 = absoluteHumidity(50, 100, airPressure);
     if (satAH50 <= AH_MAX) {
       const lx = toX(50, w);
@@ -158,8 +159,8 @@ export default function PsychroCanvas() {
     }
 
     // Axis labels
-    ctx.fillStyle = '#333333';
-    ctx.font = '11px sans-serif';
+    ctx.fillStyle = '#003d48';
+    ctx.font = '11px "DM Sans", sans-serif';
     ctx.textAlign = 'center';
     for (let T = T_MIN; T <= T_MAX; T += 5) {
       ctx.fillText(`${T}`, toX(T, w), h - PADDING.bottom + 15);
@@ -199,8 +200,8 @@ export default function PsychroCanvas() {
     }
 
     // Air pressure label
-    ctx.fillStyle = '#666666';
-    ctx.font = '10px sans-serif';
+    ctx.fillStyle = '#003d4899';
+    ctx.font = '10px "DM Sans", sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(t('chart.airPressureLabel', { value: airPressure }), PADDING.left, h - 8);
   }, [airPressure, zones, ui.moreInfo, t, toX, toY]);
@@ -223,7 +224,7 @@ export default function PsychroCanvas() {
   return (
     <canvas
       ref={canvasRef}
-      className="w-full h-[400px] md:h-[500px] border border-gray-200 rounded-lg bg-white"
+      className="w-full h-[400px] md:h-[500px] border border-brand-blue rounded-lg bg-white"
       aria-label={t('chart.title')}
     />
   );

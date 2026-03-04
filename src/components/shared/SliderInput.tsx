@@ -55,7 +55,7 @@ export default function SliderInput({
 
   return (
     <div className="flex items-center gap-2 w-full">
-      <label className="text-xs font-medium w-10 shrink-0 text-gray-600 rtl:text-right">
+      <label className="text-xs font-medium w-10 shrink-0 text-brand-teal rtl:text-right">
         {label}
       </label>
       <input
@@ -65,8 +65,8 @@ export default function SliderInput({
         step={step}
         value={value}
         onChange={handleSlider}
-        className="flex-1 h-1.5 accent-current cursor-pointer"
-        style={color ? { color } : undefined}
+        className="flex-1 h-1.5 cursor-pointer accent-brand-teal"
+        style={color ? { accentColor: color } : undefined}
       />
       <input
         type="text"
@@ -74,7 +74,7 @@ export default function SliderInput({
         value={textValue}
         onChange={handleText}
         onBlur={handleBlur}
-        className="w-14 text-xs text-center border border-gray-300 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-400"
+        className="w-14 text-xs text-center border border-gray-300 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-brand-green"
       />
       <span className="text-xs text-gray-500 w-6 shrink-0">{unit}</span>
     </div>

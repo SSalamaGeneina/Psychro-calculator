@@ -4,7 +4,6 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { useAppStore } from '../../store/useAppStore';
 
-// Fix default marker icon
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -15,7 +14,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const DEFAULT_CENTER: [number, number] = [24.7136, 46.6753]; // Riyadh
+const DEFAULT_CENTER: [number, number] = [24.7136, 46.6753];
 
 interface WeatherData {
   temperature: number | null;
@@ -86,7 +85,7 @@ export default function GeoLocationTab() {
         elevation: elData.elevation?.[0] ?? null,
       }));
     } catch {
-      /* network error, silently ignore */
+      /* network error */
     } finally {
       setLoading(false);
     }
@@ -112,9 +111,7 @@ export default function GeoLocationTab() {
         setLocation((prev) => ({ ...prev, lat: latitude, lng: longitude }));
         fetchWeather(latitude, longitude);
       },
-      () => {
-        /* permission denied */
-      }
+      () => {}
     );
   }, [fetchWeather]);
 
@@ -147,9 +144,8 @@ export default function GeoLocationTab() {
 
   return (
     <div className="p-4 space-y-4">
-      <h2 className="text-lg font-semibold text-gray-800">{t('geo.title')}</h2>
+      <h2 className="text-lg font-semibold text-brand-teal">{t('geo.title')}</h2>
 
-      {/* Search & GPS */}
       <div className="flex flex-wrap gap-2">
         <input
           type="text"
@@ -157,24 +153,23 @@ export default function GeoLocationTab() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           placeholder={t('geo.searchPlaceholder')}
-          className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
         />
         <button
           onClick={handleSearch}
-          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-brand-teal text-white text-sm rounded-md hover:bg-brand-teal-light transition-colors"
         >
           {t('geo.search')}
         </button>
         <button
           onClick={handleGPS}
-          className="px-4 py-2 border border-gray-300 text-sm rounded-md hover:bg-gray-50 transition-colors"
+          className="px-4 py-2 border border-brand-teal/30 text-brand-teal text-sm rounded-md hover:bg-brand-blue/30 transition-colors"
         >
           {t('geo.gpsLocation')}
         </button>
       </div>
 
-      {/* Map */}
-      <div className="rounded-lg overflow-hidden border border-gray-200" style={{ height: 400 }}>
+      <div className="rounded-lg overflow-hidden border border-brand-blue" style={{ height: 400 }}>
         <MapContainer
           center={[location.lat, location.lng]}
           zoom={6}
@@ -190,11 +185,9 @@ export default function GeoLocationTab() {
         </MapContainer>
       </div>
 
-      {/* Info Panels */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Current Location */}
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h3 className="font-semibold text-gray-700 mb-3">{t('geo.currentLocation')}</h3>
+        <div className="border border-brand-blue rounded-lg p-4">
+          <h3 className="font-semibold text-brand-teal mb-3">{t('geo.currentLocation')}</h3>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-500">{t('geo.coordinates')}</span>
@@ -209,9 +202,8 @@ export default function GeoLocationTab() {
           </div>
         </div>
 
-        {/* Weather Data */}
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h3 className="font-semibold text-gray-700 mb-3">{t('geo.nearbyStation')}</h3>
+        <div className="border border-brand-blue rounded-lg p-4">
+          <h3 className="font-semibold text-brand-teal mb-3">{t('geo.nearbyStation')}</h3>
           {loading ? (
             <p className="text-sm text-gray-400">Loading...</p>
           ) : (
@@ -251,7 +243,7 @@ export default function GeoLocationTab() {
           <button
             onClick={handleLoadToPsychro}
             disabled={weather.temperature === null}
-            className="mt-3 w-full px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="mt-3 w-full px-3 py-2 bg-brand-green text-white text-sm rounded-md hover:bg-brand-green-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {t('geo.loadToPsychro')}
           </button>

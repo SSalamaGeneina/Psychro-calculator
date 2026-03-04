@@ -9,12 +9,12 @@ import { useMemo } from 'react';
 
 const ZONE_KEYS = ['outside', 'aboveScreen', 'inside', 'plant'] as const;
 const ZONE_COLORS: Record<string, string> = {
-  outside: '#800080',
-  aboveScreen: '#008000',
-  inside: '#0000FF',
-  plant: '#FF0000',
+  outside: '#003d48',
+  aboveScreen: '#00c400',
+  inside: '#0077a8',
+  plant: '#DB7B2B',
 };
-const DIFF_COLOR = '#FF4500';
+const DIFF_COLOR = '#DB7B2B';
 
 interface PropertyRow {
   key: string;
@@ -85,7 +85,7 @@ export default function ZoneTable() {
                 {i < ZONE_KEYS.length - 1 && (
                   <th
                     className="px-1 py-1.5 text-white font-semibold text-center w-16"
-                    style={{ backgroundColor: DIFF_COLOR }}
+                    style={{ backgroundColor: DIFF_COLOR, opacity: 0.85 }}
                   >
                     {t('zones.diff')}
                   </th>
@@ -112,7 +112,7 @@ export default function ZoneTable() {
                   />
                 </td>
                 {i < ZONE_KEYS.length - 1 && (
-                  <td className="px-1 py-1 text-center border border-gray-200 text-orange-600 font-mono">
+                  <td className="px-1 py-1 text-center border border-gray-200 font-mono" style={{ color: DIFF_COLOR }}>
                     {fmtDiff1(diffs[i].temp)}
                   </td>
                 )}
@@ -136,7 +136,7 @@ export default function ZoneTable() {
                   />
                 </td>
                 {i < ZONE_KEYS.length - 1 && (
-                  <td className="px-1 py-1 text-center border border-gray-200 text-orange-600 font-mono">
+                  <td className="px-1 py-1 text-center border border-gray-200 font-mono" style={{ color: DIFF_COLOR }}>
                     {fmtDiff1(diffs[i].rh)}
                   </td>
                 )}
@@ -145,7 +145,7 @@ export default function ZoneTable() {
           </tr>
           {/* Property rows */}
           {allRows.map((row) => (
-            <tr key={row.key} className={row.key.includes('Vol') ? 'bg-blue-50' : ''}>
+            <tr key={row.key} className={row.key.includes('Vol') ? 'bg-brand-blue/30' : ''}>
               {ZONE_KEYS.map((zone, i) => {
                 const val = computed[zone][row.propField];
                 return (
@@ -165,7 +165,7 @@ export default function ZoneTable() {
                       </div>
                     </td>
                     {i < ZONE_KEYS.length - 1 && (
-                      <td className="px-1 py-1 text-center border border-gray-200 font-mono text-orange-600">
+                      <td className="px-1 py-1 text-center border border-gray-200 font-mono" style={{ color: DIFF_COLOR }}>
                         {row.diffFormat(diffs[i][row.diffField])}
                       </td>
                     )}

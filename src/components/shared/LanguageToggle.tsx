@@ -18,7 +18,7 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={toggle}
-      className="px-3 py-1 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+      className="px-3 py-1 text-sm font-medium border border-white/30 text-white rounded-md hover:bg-white/10 transition-colors"
       aria-label="Toggle language"
     >
       {isArabic ? 'EN' : 'عربي'}

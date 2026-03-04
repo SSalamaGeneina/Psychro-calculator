@@ -14,16 +14,16 @@ export default function PsychroDiagramTab() {
       <div className="flex flex-wrap items-center gap-4">
         <button
           onClick={toggleShowChart}
-          className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          className="px-3 py-1.5 text-sm font-medium border border-brand-teal/30 text-brand-teal rounded-md hover:bg-brand-blue/30 transition-colors"
         >
           {ui.showChart ? t('chart.hide') : t('chart.show')}
         </button>
-        <label className="flex items-center gap-2 text-sm cursor-pointer">
+        <label className="flex items-center gap-2 text-sm cursor-pointer text-brand-teal">
           <input
             type="checkbox"
             checked={ui.moreInfo}
             onChange={toggleMoreInfo}
-            className="rounded border-gray-300 accent-blue-600"
+            className="rounded border-gray-300 accent-brand-green"
           />
           {t('chart.moreInfo')}
         </label>

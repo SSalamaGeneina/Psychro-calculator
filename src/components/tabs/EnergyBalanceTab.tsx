@@ -35,10 +35,9 @@ export default function EnergyBalanceTab() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
-      <h2 className="text-lg font-semibold text-gray-800">{t('energy.title')}</h2>
+      <h2 className="text-lg font-semibold text-brand-teal">{t('energy.title')}</h2>
 
-      {/* Inputs */}
-      <div className="space-y-3 bg-gray-50 rounded-lg p-4">
+      <div className="space-y-3 bg-brand-blue/20 rounded-lg p-4">
         <SliderInput
           label={t('energy.solarRadiation')}
           value={energyBalance.solarRadiation}
@@ -68,17 +67,16 @@ export default function EnergyBalanceTab() {
         />
       </div>
 
-      {/* Reference values from Psychro tab */}
       <div className="grid grid-cols-2 gap-4 text-sm">
-        <div className="bg-purple-50 rounded-lg p-3">
-          <div className="text-purple-700 font-medium mb-1">{t('energy.outsideTemp')}</div>
+        <div className="bg-brand-teal/5 border border-brand-teal/20 rounded-lg p-3">
+          <div className="text-brand-teal font-medium mb-1">{t('energy.outsideTemp')}</div>
           <div className="font-mono text-lg">{zones.outside.temp} °C</div>
           <div className="text-gray-500 mt-1">
             {t('energy.outsideEnthalpy')}: <span className="font-mono">{fmt2(hOutside)}</span> kJ/kg
           </div>
         </div>
-        <div className="bg-blue-50 rounded-lg p-3">
-          <div className="text-blue-700 font-medium mb-1">{t('energy.insideTemp')}</div>
+        <div className="bg-brand-blue/30 border border-brand-blue rounded-lg p-3">
+          <div className="text-brand-teal font-medium mb-1">{t('energy.insideTemp')}</div>
           <div className="font-mono text-lg">{zones.inside.temp} °C</div>
           <div className="text-gray-500 mt-1">
             {t('energy.insideEnthalpy')}: <span className="font-mono">{fmt2(hInside)}</span> kJ/kg
@@ -86,15 +84,14 @@ export default function EnergyBalanceTab() {
         </div>
       </div>
 
-      {/* Outputs */}
       <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
         <div className="flex justify-between items-center p-3">
           <span className="text-sm text-gray-600">{t('energy.energyInput')}</span>
           <span className="font-mono font-medium">{fmt2(result.qSolar)} W/m²</span>
         </div>
-        <div className="flex justify-between items-center p-3 bg-green-50">
-          <span className="text-sm font-medium text-green-800">{t('energy.ventilationRate')}</span>
-          <span className="font-mono font-bold text-green-700">
+        <div className="flex justify-between items-center p-3" style={{ backgroundColor: '#00c40012' }}>
+          <span className="text-sm font-medium text-brand-teal">{t('energy.ventilationRate')}</span>
+          <span className="font-mono font-bold" style={{ color: '#00c400' }}>
             {isFinite(result.ventilationRate) ? fmt2(result.ventilationRate) : '∞'} kg/m²·hr
           </span>
         </div>
