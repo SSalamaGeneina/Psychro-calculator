@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect } from 'react';
 
 export default function LanguageToggle() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const isArabic = i18n.language === 'ar';
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function LanguageToggle() {
     <button
       onClick={toggle}
       className="px-3 py-1 text-sm font-medium border border-white/30 text-white rounded-md hover:bg-white/10 transition-colors"
-      aria-label="Toggle language"
+      aria-label={t('app.toggleLanguage')}
     >
       {isArabic ? 'EN' : 'عربي'}
     </button>

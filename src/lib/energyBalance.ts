@@ -8,11 +8,15 @@ export interface EnergyBalanceInputs {
   hInside: number;
 }
 
+export type VentilationStatus = 'ok' | 'notSolvable' | 'noVentilationNeeded';
+
 export interface EnergyBalanceResult {
   qSolar: number;
   qWallLoss: number;
   qNet: number;
-  ventilationRate: number;
+  dH: number;
+  ventilationRate: number | null;
+  status: VentilationStatus;
 }
 
 export function computeEnergyBalance(inputs: EnergyBalanceInputs): EnergyBalanceResult {
@@ -21,7 +25,15 @@ export function computeEnergyBalance(inputs: EnergyBalanceInputs): EnergyBalance
   const qNet = qSolar - qWallLoss;
 
   const dH = inputs.hInside - inputs.hOutside;
-  const ventilationRate = dH <= 0 ? Infinity : (qNet * 3.6) / dH;
+  if (qNet <= 0) {
+    return { qSolar, qWallLoss, qNet, dH, ventilationRate: 0, status: 'noVentilationNeeded' };
+  }
 
-  return { qSolar, qWallLoss, qNet, ventilationRate };
+  if (dH <= 0 || !isFinite(dH)) {
+    return { qSolar, qWallLoss, qNet, dH, ventilationRate: null, status: 'notSolvable' };
+  }
+
+  const ventilationRate = Math.max(0, (qNet * 3.6) / dH);
+
+  return { qSolar, qWallLoss, qNet, dH, ventilationRate, status: 'ok' };
 }

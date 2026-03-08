@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useId } from 'react';
 import { parseNumericInput } from '../../lib/formatting';
 
 interface SliderInputProps {
@@ -22,6 +22,10 @@ export default function SliderInput({
   onChange,
   color,
 }: SliderInputProps) {
+  const idBase = useId();
+  const rangeId = `${idBase}-range`;
+  const textId = `${idBase}-text`;
+  const labelId = `${idBase}-label`;
   const [textValue, setTextValue] = useState(String(value));
 
   useEffect(() => {
@@ -55,10 +59,15 @@ export default function SliderInput({
 
   return (
     <div className="flex items-center gap-2 w-full">
-      <label className="text-xs font-medium w-10 shrink-0 text-brand-teal rtl:text-right">
+      <label
+        id={labelId}
+        htmlFor={rangeId}
+        className="text-xs font-medium w-10 shrink-0 text-brand-teal rtl:text-right"
+      >
         {label}
       </label>
       <input
+        id={rangeId}
         type="range"
         min={min}
         max={max}
@@ -66,15 +75,18 @@ export default function SliderInput({
         value={value}
         onChange={handleSlider}
         className="flex-1 h-1.5 cursor-pointer accent-brand-teal"
+        aria-labelledby={labelId}
         style={color ? { accentColor: color } : undefined}
       />
       <input
+        id={textId}
         type="text"
         inputMode="decimal"
         value={textValue}
         onChange={handleText}
         onBlur={handleBlur}
         className="w-14 text-xs text-center border border-gray-300 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-brand-green"
+        aria-label={`${label} ${unit}`}
       />
       <span className="text-xs text-gray-500 w-6 shrink-0">{unit}</span>
     </div>

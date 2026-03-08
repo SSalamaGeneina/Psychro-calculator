@@ -20,10 +20,10 @@ export default function MoistureBalanceTab() {
     [zones.inside, airPressure]
   );
 
-  const ventRate = useMemo(() => {
+  const energyResult = useMemo(() => {
     const hOut = enthalpy(zones.outside.temp, zones.outside.rh, airPressure);
     const hIn = enthalpy(zones.inside.temp, zones.inside.rh, airPressure);
-    const eb = computeEnergyBalance({
+    return computeEnergyBalance({
       solarRadiation: energyBalance.solarRadiation,
       radiationInsidePercent: energyBalance.radiationInside,
       uValue: energyBalance.uValue,
@@ -32,13 +32,14 @@ export default function MoistureBalanceTab() {
       hOutside: hOut,
       hInside: hIn,
     });
-    return eb.ventilationRate;
   }, [zones, airPressure, energyBalance]);
+
+  const ventRate = energyResult.status === 'notSolvable' ? null : energyResult.ventilationRate;
 
   const result = useMemo(
     () =>
       computeMoistureBalance({
-        ventilationRate: isFinite(ventRate) ? ventRate : 0,
+        ventilationRate: ventRate,
         ahInside,
         ahOutside,
         cropEvaporation: moistureBalance.cropEvaporation,
@@ -60,6 +61,13 @@ export default function MoistureBalanceTab() {
       : result.trend === 'decrease'
         ? 'text-brand-green bg-brand-green/10'
         : 'text-gray-600 bg-gray-50';
+
+  const ventStatusLabel =
+    energyResult.status === 'ok'
+      ? `${fmt2(ventRate ?? 0)} ${t('energy.ventilationRateUnit')}`
+      : energyResult.status === 'noVentilationNeeded'
+        ? t('energy.statusNoVentilationNeeded')
+        : t('energy.statusNotSolvable');
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
@@ -89,30 +97,38 @@ export default function MoistureBalanceTab() {
       <div className="grid grid-cols-3 gap-3 text-sm">
         <div className="bg-brand-teal/5 border border-brand-teal/20 rounded-lg p-3 text-center">
           <div className="text-brand-teal text-xs mb-1">{t('moisture.outsideAH')}</div>
-          <div className="font-mono font-medium">{fmt2(ahOutside)} g/kg</div>
+          <div className="font-mono font-medium">{fmt2(ahOutside)} {t('outputs.ahUnit')}</div>
         </div>
         <div className="bg-brand-blue/30 border border-brand-blue rounded-lg p-3 text-center">
           <div className="text-brand-teal text-xs mb-1">{t('moisture.insideAH')}</div>
-          <div className="font-mono font-medium">{fmt2(ahInside)} g/kg</div>
+          <div className="font-mono font-medium">{fmt2(ahInside)} {t('outputs.ahUnit')}</div>
         </div>
         <div className="bg-brand-orange/10 border border-brand-orange/30 rounded-lg p-3 text-center">
           <div className="text-brand-orange text-xs mb-1">{t('moisture.ventilationRate')}</div>
-          <div className="font-mono font-medium">
-            {isFinite(ventRate) ? fmt2(ventRate) : '∞'} kg/m²·hr
-          </div>
+          <div className="font-mono font-medium">{ventStatusLabel}</div>
         </div>
       </div>
 
       <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
         <div className="flex justify-between items-center p-3">
           <span className="text-sm text-gray-600">{t('moisture.moistureRemoved')}</span>
-          <span className="font-mono">{fmt2(result.moistureRemoved)} g/m²·hr</span>
+          <span className="font-mono">
+            {result.moistureRemoved === null ? '—' : `${fmt2(result.moistureRemoved)} g/m²·hr`}
+          </span>
         </div>
         <div className="flex justify-between items-center p-3">
           <span className="text-sm text-gray-600">{t('moisture.netBalance')}</span>
-          <span className="font-mono font-medium">{fmt2(result.netBalance)} g/m²·hr</span>
+          <span className="font-mono font-medium">
+            {result.netBalance === null ? '—' : `${fmt2(result.netBalance)} g/m²·hr`}
+          </span>
         </div>
-        <div className={`p-3 text-center font-medium ${trendColor}`}>{t(trendKey)}</div>
+        {result.status === 'ok' ? (
+          <div className={`p-3 text-center font-medium ${trendColor}`}>{t(trendKey)}</div>
+        ) : (
+          <div className="p-3 text-center text-sm font-medium text-brand-orange bg-brand-orange/10">
+            {t('moisture.cannotComputeTrend')}
+          </div>
+        )}
       </div>
     </div>
   );

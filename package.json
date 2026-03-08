@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:build": "tsc -p tsconfig.test.json && printf '{\"type\":\"commonjs\"}\\n' > .test-dist/package.json",
+    "test": "npm run test:build && node --test .test-dist/tests/lib/*.test.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",

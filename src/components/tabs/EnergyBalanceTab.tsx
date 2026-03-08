@@ -33,6 +33,20 @@ export default function EnergyBalanceTab() {
     [energyBalance, zones.outside.temp, zones.inside.temp, hOutside, hInside]
   );
 
+  const ventilationStatusText =
+    result.status === 'ok'
+      ? `${fmt2(result.ventilationRate ?? 0)} ${t('energy.ventilationRateUnit')}`
+      : result.status === 'noVentilationNeeded'
+        ? t('energy.statusNoVentilationNeeded')
+        : t('energy.statusNotSolvable');
+
+  const ventilationStatusClass =
+    result.status === 'ok'
+      ? 'text-brand-green'
+      : result.status === 'noVentilationNeeded'
+        ? 'text-brand-teal'
+        : 'text-brand-orange';
+
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
       <h2 className="text-lg font-semibold text-brand-teal">{t('energy.title')}</h2>
@@ -72,14 +86,16 @@ export default function EnergyBalanceTab() {
           <div className="text-brand-teal font-medium mb-1">{t('energy.outsideTemp')}</div>
           <div className="font-mono text-lg">{zones.outside.temp} °C</div>
           <div className="text-gray-500 mt-1">
-            {t('energy.outsideEnthalpy')}: <span className="font-mono">{fmt2(hOutside)}</span> kJ/kg
+            {t('energy.outsideEnthalpy')}:{' '}
+            <span className="font-mono">{fmt2(hOutside)}</span> {t('outputs.hUnit')}
           </div>
         </div>
         <div className="bg-brand-blue/30 border border-brand-blue rounded-lg p-3">
           <div className="text-brand-teal font-medium mb-1">{t('energy.insideTemp')}</div>
           <div className="font-mono text-lg">{zones.inside.temp} °C</div>
           <div className="text-gray-500 mt-1">
-            {t('energy.insideEnthalpy')}: <span className="font-mono">{fmt2(hInside)}</span> kJ/kg
+            {t('energy.insideEnthalpy')}:{' '}
+            <span className="font-mono">{fmt2(hInside)}</span> {t('outputs.hUnit')}
           </div>
         </div>
       </div>
@@ -89,10 +105,10 @@ export default function EnergyBalanceTab() {
           <span className="text-sm text-gray-600">{t('energy.energyInput')}</span>
           <span className="font-mono font-medium">{fmt2(result.qSolar)} W/m²</span>
         </div>
-        <div className="flex justify-between items-center p-3" style={{ backgroundColor: '#00c40012' }}>
+        <div className="flex justify-between items-center p-3" style={{ backgroundColor: '#0b6f1d12' }}>
           <span className="text-sm font-medium text-brand-teal">{t('energy.ventilationRate')}</span>
-          <span className="font-mono font-bold" style={{ color: '#00c400' }}>
-            {isFinite(result.ventilationRate) ? fmt2(result.ventilationRate) : '∞'} kg/m²·hr
+          <span className={`font-mono font-bold ${ventilationStatusClass}`}>
+            {ventilationStatusText}
           </span>
         </div>
       </div>

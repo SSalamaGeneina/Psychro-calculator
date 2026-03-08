@@ -2,7 +2,10 @@
   "app": {
     "title": "Greenhouse Psychrometric Calculator",
     "showExtra": "Show Extra",
-    "hideExtra": "Hide Extra"
+    "hideExtra": "Hide Extra",
+    "navigation": "Primary navigation",
+    "loading": "Loading content",
+    "toggleLanguage": "Toggle language"
   },
   "tabs": {
     "introduction": "Introduction",
@@ -26,13 +29,13 @@
   },
   "outputs": {
     "ah": "Absolute Humidity",
-    "ahUnit": "g/kg",
+    "ahUnit": "g/kg dry air",
     "ahVolUnit": "g/m³",
     "hd": "Humidity Deficit",
-    "hdUnit": "g/kg",
+    "hdUnit": "g/kg dry air",
     "hdVolUnit": "g/m³",
     "h": "Enthalpy",
-    "hUnit": "kJ/kg",
+    "hUnit": "kJ/kg dry air",
     "hVolUnit": "kJ/m³",
     "vpd": "Vapor Pressure Deficit",
     "vpdUnit": "kPa",
@@ -51,18 +54,22 @@
     "airPressureLabel": "Air pressure: {{value}} hPa",
     "saturationCurve": "Saturation curve (100% RH)",
     "tempAxis": "Temperature (°C)",
-    "moistureAxis": "Moisture Content (g/kg air)",
-    "enthalpyAxis": "Enthalpy (kJ/kg air)"
+    "moistureAxis": "Moisture Content (g/kg dry air)",
+    "enthalpyAxis": "Enthalpy (kJ/kg dry air)",
+    "outOfRangeShort": "Out of range",
+    "outOfRangeWarning": "Chart cannot display: {{zones}}. Adjust temperature/RH or use table values."
   },
   "geo": {
     "title": "Geo Location",
     "searchPlaceholder": "Search location...",
     "search": "Search",
+    "searching": "Searching...",
     "gpsLocation": "Current GPS Location",
+    "gpsLocating": "Locating...",
     "currentLocation": "Current Location",
     "coordinates": "Coordinates",
     "elevation": "Elevation",
-    "nearbyStation": "Nearby Weather Station",
+    "modelEstimate": "Weather Model Estimate (Nearest Grid Cell)",
     "stationName": "Station",
     "distance": "Distance",
     "lastObservation": "Last Observation",
@@ -70,7 +77,17 @@
     "humidity": "Humidity",
     "windSpeed": "Wind Speed",
     "windDirection": "Wind Direction",
-    "loadToPsychro": "▶ Psychro"
+    "loadToPsychro": "▶ Psychro",
+    "loading": "Loading weather estimate...",
+    "errors": {
+      "weatherFetch": "Weather data could not be loaded. Try again in a moment.",
+      "searchFailed": "Location search failed. Please retry.",
+      "searchNoResults": "No matching location found for that search.",
+      "gpsUnavailable": "GPS is not available in this browser.",
+      "gpsDenied": "GPS permission was denied.",
+      "gpsTimeout": "GPS request timed out.",
+      "gpsUnknown": "GPS request failed."
+    }
   },
   "energy": {
     "title": "Energy Balance",
@@ -79,10 +96,13 @@
     "uValue": "Estimated U-value",
     "energyInput": "Calculated Energy Input",
     "ventilationRate": "Required Ventilation Rate",
+    "ventilationRateUnit": "kg dry air/m²·hr",
     "outsideTemp": "Outside Temperature",
     "insideTemp": "Inside Temperature",
     "outsideEnthalpy": "Outside Enthalpy",
-    "insideEnthalpy": "Inside Enthalpy"
+    "insideEnthalpy": "Inside Enthalpy",
+    "statusNoVentilationNeeded": "No ventilation needed (Qnet <= 0)",
+    "statusNotSolvable": "Not solvable with current assumptions (Δh <= 0)"
   },
   "moisture": {
     "title": "Moisture Balance",
@@ -95,7 +115,8 @@
     "netBalance": "Net Moisture Balance",
     "resultIncrease": "The RH in the greenhouse will increase.",
     "resultDecrease": "The RH in the greenhouse will decrease.",
-    "resultStable": "The RH in the greenhouse will remain stable."
+    "resultStable": "The RH in the greenhouse will remain stable.",
+    "cannotComputeTrend": "Cannot compute moisture trend under current assumptions."
   },
   "mc": {
     "title": "Moisture Control",
@@ -134,6 +155,8 @@
     "extraNote": "Click \"Show Extra\" in the top-right corner to reveal the Energy Balance, Moisture Balance, and Moisture Control tabs."
   },
   "info": {
+    "tooltipLabel": "i",
+    "tooltipButton": "More information",
     "ah": "Absolute Humidity (Mixing Ratio): Grams of water vapor per kilogram of dry air. Higher values mean more moisture in the air. Critical for understanding actual moisture content independent of temperature.",
     "hd": "Humidity Deficit: The difference between the maximum moisture the air could hold (at saturation) and the actual moisture content. A higher deficit means the air can absorb more moisture, promoting plant transpiration.",
     "h": "Enthalpy: Total heat content per kg of dry air, including both sensible heat (temperature) and latent heat (moisture). Used to calculate energy requirements for ventilation.",

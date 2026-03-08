@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../../store/useAppStore';
-import { computeZoneProperties, computeDifferences, type ZoneProperties, type ZoneDifferences } from '../../lib/psychro';
+import { absoluteHumidity, computeZoneProperties, computeDifferences, type ZoneProperties, type ZoneDifferences } from '../../lib/psychro';
 import { fmt2, fmt1, fmtDiff2, fmtDiff1 } from '../../lib/formatting';
 import SliderInput from './SliderInput';
 import InfoTooltip from './InfoTooltip';
@@ -10,11 +10,15 @@ import { useMemo } from 'react';
 const ZONE_KEYS = ['outside', 'aboveScreen', 'inside', 'plant'] as const;
 const ZONE_COLORS: Record<string, string> = {
   outside: '#003d48',
-  aboveScreen: '#00c400',
+  aboveScreen: '#0b6f1d',
   inside: '#0077a8',
   plant: '#DB7B2B',
 };
 const DIFF_COLOR = '#DB7B2B';
+const CHART_T_MIN = -10;
+const CHART_T_MAX = 55;
+const CHART_AH_MIN = 0;
+const CHART_AH_MAX = 30;
 
 interface PropertyRow {
   key: string;
@@ -69,8 +73,23 @@ export default function ZoneTable() {
 
   const allRows = [...STANDARD_ROWS, ...extendedRows];
 
+  const outOfRangeZones = useMemo(() => {
+    return ZONE_KEYS.filter((zone) => {
+      const z = zones[zone];
+      const ah = absoluteHumidity(z.temp, z.rh, airPressure);
+      return z.temp < CHART_T_MIN || z.temp > CHART_T_MAX || ah < CHART_AH_MIN || ah > CHART_AH_MAX;
+    });
+  }, [zones, airPressure]);
+
   return (
     <div className="overflow-x-auto">
+      {outOfRangeZones.length > 0 && (
+        <div className="mb-2 text-xs text-brand-orange bg-brand-orange/10 border border-brand-orange/30 rounded-md p-2">
+          {t('chart.outOfRangeWarning', {
+            zones: outOfRangeZones.map((zone) => t(`zones.${zone}`)).join(', '),
+          })}
+        </div>
+      )}
       <table className="w-full text-xs border-collapse min-w-[800px]">
         <thead>
           <tr>
@@ -81,6 +100,11 @@ export default function ZoneTable() {
                   style={{ backgroundColor: ZONE_COLORS[zone] }}
                 >
                   {t(`zones.${zone}`)}
+                  {outOfRangeZones.includes(zone) && (
+                    <div className="text-[10px] font-medium mt-0.5 opacity-90">
+                      {t('chart.outOfRangeShort')}
+                    </div>
+                  )}
                 </th>
                 {i < ZONE_KEYS.length - 1 && (
                   <th
@@ -155,7 +179,7 @@ export default function ZoneTable() {
                         <span className="text-gray-500">{t(row.labelKey)}</span>
                         <span className="flex items-center gap-1">
                           <span className="font-mono font-medium">
-                            {val !== undefined ? row.format(val) : '—'}
+                            {val !== undefined && val !== null ? row.format(val) : '—'}
                           </span>
                           <span className="text-gray-400">{t(row.unitKey)}</span>
                           {zone === 'plant' && !row.key.includes('Vol') && (
@@ -166,7 +190,9 @@ export default function ZoneTable() {
                     </td>
                     {i < ZONE_KEYS.length - 1 && (
                       <td className="px-1 py-1 text-center border border-gray-200 font-mono" style={{ color: DIFF_COLOR }}>
-                        {row.diffFormat(diffs[i][row.diffField])}
+                        {typeof diffs[i][row.diffField] === 'number'
+                          ? row.diffFormat(diffs[i][row.diffField] as number)
+                          : '—'}
                       </td>
                     )}
                   </React.Fragment>

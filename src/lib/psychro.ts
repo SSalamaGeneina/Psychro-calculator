@@ -1,11 +1,17 @@
 /**
  * Core psychrometric calculation engine.
- * All formulas validated against LetsGrow.com GPE Psychro v3.1 reference.
- * Tetens over-water formula used universally (including sub-zero) per PRD.
+ * Saturation pressure uses a temperature-branch Buck model:
+ * - over ice for T < 0 C
+ * - over water for T >= 0 C
  */
 
 export function saturationVaporPressure(T: number): number {
-  return 0.61078 * Math.exp((17.27 * T) / (T + 237.3));
+  if (T < 0) {
+    // Buck (1981), valid and stable for sub-zero conditions.
+    return 0.61115 * Math.exp((23.036 - T / 333.7) * (T / (279.82 + T)));
+  }
+  // Buck (1981), over-liquid-water branch.
+  return 0.61121 * Math.exp((18.678 - T / 234.5) * (T / (257.14 + T)));
 }
 
 export function vaporPressure(T: number, RH: number): number {
@@ -19,6 +25,8 @@ export function vaporPressureDeficit(T: number, RH: number): number {
 export function absoluteHumidity(T: number, RH: number, P_hPa: number): number {
   const vp = vaporPressure(T, RH);
   const P_kPa = P_hPa / 10.0;
+  if (vp <= 0) return 0;
+  if (vp >= P_kPa) return Infinity;
   return (622.0 * vp) / (P_kPa - vp);
 }
 
@@ -31,11 +39,26 @@ export function enthalpy(T: number, RH: number, P_hPa: number): number {
   return 1.006 * T + w * (2501.0 + 1.86 * T);
 }
 
-export function dewPoint(T: number, RH: number): number {
+export function dewPoint(T: number, RH: number): number | null {
+  if (RH <= 0) return null;
   const vp = vaporPressure(T, RH);
-  if (vp <= 0) return -273.15;
-  const alpha = Math.log(vp / 0.61078);
-  return (237.3 * alpha) / (17.27 - alpha);
+  if (!isFinite(vp) || vp <= 0) return null;
+
+  // Numerically invert saturation curve to support both water/ice branches.
+  let lo = -100;
+  let hi = 100;
+  if (vp <= saturationVaporPressure(lo)) return lo;
+  if (vp >= saturationVaporPressure(hi)) return hi;
+
+  for (let i = 0; i < 60; i += 1) {
+    const mid = (lo + hi) / 2;
+    if (saturationVaporPressure(mid) > vp) {
+      hi = mid;
+    } else {
+      lo = mid;
+    }
+  }
+  return (lo + hi) / 2;
 }
 
 export function moistAirDensity(T: number, RH: number, P_hPa: number): number {
@@ -52,7 +75,7 @@ export interface ZoneProperties {
   vpd: number;
   vp: number;
   vpsat: number;
-  tdp: number;
+  tdp: number | null;
   ahVol?: number;
   hdVol?: number;
   hVol?: number;
@@ -93,7 +116,7 @@ export interface ZoneDifferences {
   vpd: number;
   vp: number;
   vpsat: number;
-  tdp: number;
+  tdp: number | null;
 }
 
 export function computeDifferences(
@@ -104,6 +127,9 @@ export function computeDifferences(
   rightRH: number,
   rightProps: ZoneProperties
 ): ZoneDifferences {
+  const tdpDiff =
+    leftProps.tdp === null || rightProps.tdp === null ? null : rightProps.tdp - leftProps.tdp;
+
   return {
     temp: rightT - leftT,
     rh: rightRH - leftRH,
@@ -113,6 +139,6 @@ export function computeDifferences(
     vpd: rightProps.vpd - leftProps.vpd,
     vp: rightProps.vp - leftProps.vp,
     vpsat: rightProps.vpsat - leftProps.vpsat,
-    tdp: rightProps.tdp - leftProps.tdp,
+    tdp: tdpDiff,
   };
 }

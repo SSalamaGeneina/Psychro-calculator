@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../../store/useAppStore';
 import { saturationVaporPressure, vaporPressure, absoluteHumidity } from '../../lib/psychro';
@@ -8,10 +8,11 @@ const T_MAX = 55;
 const AH_MIN = 0;
 const AH_MAX = 30;
 const PADDING = { top: 40, right: 60, bottom: 50, left: 60 };
+const ZONE_KEYS = ['outside', 'aboveScreen', 'inside', 'plant'] as const;
 
 const ZONE_COLORS: Record<string, string> = {
   outside: '#003d48',
-  aboveScreen: '#00c400',
+  aboveScreen: '#0b6f1d',
   inside: '#0077a8',
   plant: '#DB7B2B',
 };
@@ -21,6 +22,14 @@ export default function PsychroCanvas() {
   const { t } = useTranslation();
   const { airPressure, zones, ui } = useAppStore();
   const animRef = useRef<number>(0);
+
+  const outOfRangeZones = useMemo(() => {
+    return ZONE_KEYS.filter((key) => {
+      const z = zones[key];
+      const ah = absoluteHumidity(z.temp, z.rh, airPressure);
+      return z.temp < T_MIN || z.temp > T_MAX || ah < AH_MIN || ah > AH_MAX;
+    });
+  }, [zones, airPressure]);
 
   const toX = useCallback(
     (T: number, w: number) =>
@@ -134,7 +143,7 @@ export default function PsychroCanvas() {
     };
 
     for (let rh = 10; rh <= 90; rh += 10) {
-      drawRHCurve(rh, '#00c40088', 0.7, true);
+      drawRHCurve(rh, '#0b6f1d88', 0.7, true);
     }
     // Saturation curve bold
     drawRHCurve(100, '#DB7B2B', 2.5, false);
@@ -181,11 +190,10 @@ export default function PsychroCanvas() {
 
     // Zone data points
     if (ui.moreInfo) {
-      const zoneKeys = ['outside', 'aboveScreen', 'inside', 'plant'] as const;
-      for (const key of zoneKeys) {
+      for (const key of ZONE_KEYS) {
         const z = zones[key];
         const ah = absoluteHumidity(z.temp, z.rh, airPressure);
-        if (z.temp < T_MIN || z.temp > T_MAX || ah > AH_MAX) continue;
+        if (z.temp < T_MIN || z.temp > T_MAX || ah < AH_MIN || ah > AH_MAX) continue;
         const x = toX(z.temp, w);
         const y = toY(ah, h);
 
@@ -222,10 +230,19 @@ export default function PsychroCanvas() {
   }, [draw]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full h-[400px] md:h-[500px] border border-brand-blue rounded-lg bg-white"
-      aria-label={t('chart.title')}
-    />
+    <div className="space-y-2">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-[400px] md:h-[500px] border border-brand-blue rounded-lg bg-white"
+        aria-label={t('chart.title')}
+      />
+      {outOfRangeZones.length > 0 && (
+        <div className="text-xs text-brand-orange bg-brand-orange/10 border border-brand-orange/30 rounded-md p-2">
+          {t('chart.outOfRangeWarning', {
+            zones: outOfRangeZones.map((zone) => t(`zones.${zone}`)).join(', '),
+          })}
+        </div>
+      )}
+    </div>
   );
 }

@@ -86,7 +86,7 @@ export default function MoistureControlTab() {
         <div className="mt-3 border border-gray-200 rounded-lg p-3">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">{t('mc.cropAH')}</span>
-            <span className="font-mono">{fmt2(result.cropAH)} g/kg</span>
+            <span className="font-mono">{fmt2(result.cropAH)} {t('outputs.ahUnit')}</span>
           </div>
         </div>
       </div>
@@ -106,9 +106,9 @@ export default function MoistureControlTab() {
             <span className="text-gray-600">{t('mc.airMovement')}</span>
             <span className="font-mono">{fmt2(result.airMovement)} cm/s</span>
           </div>
-          <div className="flex justify-between p-3 text-sm" style={{ backgroundColor: '#00c40012' }}>
+          <div className="flex justify-between p-3 text-sm" style={{ backgroundColor: '#0b6f1d12' }}>
             <span className="font-medium text-brand-teal">{t('mc.totalTransport')}</span>
-            <span className="font-mono font-medium" style={{ color: '#00c400' }}>{fmt2(result.totalMoistureTransport)} g/m²·hr</span>
+            <span className="font-mono font-medium text-brand-green">{fmt2(result.totalMoistureTransport)} g/m²·hr</span>
           </div>
         </div>
       </div>
